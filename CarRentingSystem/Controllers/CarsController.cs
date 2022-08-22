@@ -20,6 +20,24 @@ namespace CarRentingSystem.Controllers
         {
             Categories = this.GetCarCategories()
         });
+        public IActionResult All()
+        {
+            var cars = this.data
+                .Cars
+                .OrderByDescending(c => c.Id)
+                .Select(c => new CarListingViewModel
+                {
+                    Id = c.Id,
+                    Brand = c.Brand,
+                    Model = c.Model,
+                    Year = c.Year,
+                    ImageUrl = c.ImageUrl,
+                    Category = c.Category.Name
+                })
+                .ToList(); 
+            
+            return View(cars);
+        }
         
         [HttpPost]
         public IActionResult Add(AddCarFormModel car)
@@ -54,7 +72,8 @@ namespace CarRentingSystem.Controllers
 
             this.data.SaveChanges();
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction(nameof(All));
+            //return RedirectToAction("Index", "Home");
         }
 
         private IEnumerable<CarCategoryViewModel> GetCarCategories()
