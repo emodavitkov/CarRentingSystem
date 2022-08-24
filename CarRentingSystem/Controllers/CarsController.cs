@@ -16,15 +16,37 @@ namespace CarRentingSystem.Controllers
             this.data = data;
         }
 
-        public IActionResult Add() => View(new AddCarFormModel
+
+        //public IActionResult All(string brand, string searchTerm, CarSorting sorting)
+        public IActionResult All([FromQuery]AllCarsQueryModel query)
         {
-            Categories = this.GetCarCategories()
-        });
-        public IActionResult All()
-        {
-            var cars = this.data
-                .Cars
-                .OrderByDescending(c => c.Id)
+            var carsQuery = this.data.Cars.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(query.Brand))
+            {
+                carsQuery = carsQuery.Where(c => c.Brand == query.Brand);
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.SearchTerm))
+            {
+                carsQuery = carsQuery.Where(c => 
+                    (c.Brand + " " + c.Model).ToLower().Contains(query.SearchTerm.ToLower()) ||
+                    c.Description.ToLower().Contains(query.SearchTerm.ToLower()));
+            }
+
+            carsQuery = query.Sorting switch
+            {
+                //CarSorting.DateCreated => carsQuery.OrderByDescending(c => c.Id),
+                CarSorting.Year => carsQuery.OrderByDescending(c => c.Year),
+                CarSorting.BrandAndModel => carsQuery.OrderBy(c => c.Brand).ThenBy(c => c.Model),
+                CarSorting.DateCreated or _ => carsQuery.OrderByDescending(c => c.Id)
+                //_ => carsQuery.OrderByDescending(c => c.Id)
+            };
+
+            var cars = carsQuery
+               // .OrderByDescending(c => c.Id)
+               .Skip((query.CurrentPage -1)*AllCarsQueryModel.CarsPerPage)
+               .Take(AllCarsQueryModel.CarsPerPage)
                 .Select(c => new CarListingViewModel
                 {
                     Id = c.Id,
@@ -34,11 +56,36 @@ namespace CarRentingSystem.Controllers
                     ImageUrl = c.ImageUrl,
                     Category = c.Category.Name
                 })
-                .ToList(); 
-            
-            return View(cars);
+                .ToList();
+
+            var carBrands = this.data
+                .Cars
+                .Select(c => c.Brand)
+                .Distinct()
+                .OrderBy(br => br)
+                .ToList();
+
+            query.Brands=carBrands;
+            query.Cars=cars;
+
+            return View(query);
+
+
+            //return View(new AllCarsQueryModel
+            //{
+            //    Brand = brand,
+            //    Brands = carBrands,
+            //    SearchTerm = searchTerm,
+            //    Sorting = sorting,
+            //    Cars = cars,
+            //});
         }
-        
+
+        public IActionResult Add() => View(new AddCarFormModel
+        {
+            Categories = this.GetCarCategories()
+        });
+
         [HttpPost]
         public IActionResult Add(AddCarFormModel car)
         {
