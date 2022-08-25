@@ -43,6 +43,8 @@ namespace CarRentingSystem.Controllers
                 //_ => carsQuery.OrderByDescending(c => c.Id)
             };
 
+            var totalCars = carsQuery.Count();
+
             var cars = carsQuery
                // .OrderByDescending(c => c.Id)
                .Skip((query.CurrentPage -1)*AllCarsQueryModel.CarsPerPage)
@@ -65,6 +67,7 @@ namespace CarRentingSystem.Controllers
                 .OrderBy(br => br)
                 .ToList();
 
+            query.TotalCars = totalCars;
             query.Brands=carBrands;
             query.Cars=cars;
 
