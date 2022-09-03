@@ -1,12 +1,13 @@
-﻿using CarRentingSystem.Data;
-using CarRentingSystem.Data.Models;
-using CarRentingSystem.Models.Cars;
-using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-
-namespace CarRentingSystem.Controllers
+﻿namespace CarRentingSystem.Controllers
 {
+    using CarRentingSystem.Data;
+    using CarRentingSystem.Data.Models;
+    using CarRentingSystem.Models.Cars;
+    using Microsoft.AspNetCore.Mvc;
+    using System.Collections.Generic;
+    using Microsoft.AspNetCore.Authorization;
+    using CarRentingSystem.Infrastructure;
+
     public class CarsController : Controller
     {
         private readonly CarRentingDbContext data;
@@ -84,14 +85,43 @@ namespace CarRentingSystem.Controllers
             //});
         }
 
-        public IActionResult Add() => View(new AddCarFormModel
+        [Authorize]
+        public IActionResult Add()
         {
-            Categories = this.GetCarCategories()
-        });
+            // var userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            // var userIsDealer = this.data.Dealers.Any(d => d.UserId == userId);
+            
+            // var userIsDealer = this.data
+            //    .Dealers
+            //    .Any(d => d.UserId == this.User.GetId());
+
+            if (!this.UserIdDealer())
+            {
+                return RedirectToAction(nameof(DealersController.Become), "Dealers");
+            }
+
+
+            return View(new AddCarFormModel
+            {
+                Categories = this.GetCarCategories()
+            });
+        }
 
         [HttpPost]
+        [Authorize]
         public IActionResult Add(AddCarFormModel car)
         {
+            var dealerId = this.data
+                .Dealers
+                .Where(d => d.UserId == this.User.GetId())
+                .Select(d => d.Id)
+                .FirstOrDefault();
+
+            if (dealerId == 0)
+            {
+                return RedirectToAction(nameof(DealersController.Become), "Dealers");
+            }
+
 
             if (!this.data.Categories.Any(c => c.Id == car.CategoryId))
             {
@@ -115,7 +145,8 @@ namespace CarRentingSystem.Controllers
                 Description = car.Description,
                 ImageUrl = car.ImageUrl,
                 Year = car.Year,
-                CategoryId = car.CategoryId
+                CategoryId = car.CategoryId,
+                DealerId = dealerId,
             };
 
             this.data.Cars.Add(carData);
@@ -125,6 +156,11 @@ namespace CarRentingSystem.Controllers
             return RedirectToAction(nameof(All));
             //return RedirectToAction("Index", "Home");
         }
+
+        private bool UserIdDealer()
+            => this.data
+                .Dealers
+                .Any(d => d.UserId == this.User.GetId());
 
         private IEnumerable<CarCategoryViewModel> GetCarCategories()
         => this.data
