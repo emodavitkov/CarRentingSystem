@@ -18,6 +18,7 @@ namespace CarRentingSystem.Controllers
         public IActionResult Index()
         {
             var totalCars = this.data.Cars.Count();
+            var totalUsers = this.data.Users.Count();
 
             var cars = this.data
                 .Cars
@@ -40,6 +41,7 @@ namespace CarRentingSystem.Controllers
             return View(new IndexViewModel
             {
                 TotalCars = totalCars,
+                TotalUsers = totalUsers,
                 Cars = cars,
             });
         }

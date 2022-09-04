@@ -1,4 +1,6 @@
-﻿namespace CarRentingSystem.Controllers
+﻿using CarRentingSystem.Models;
+
+namespace CarRentingSystem.Controllers
 {
     using CarRentingSystem.Data;
     using CarRentingSystem.Data.Models;

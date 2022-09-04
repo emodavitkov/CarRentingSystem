@@ -19,4 +19,9 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\Api\Cars\" />
+    <Folder Include="Services\" />
+  </ItemGroup>
+
 </Project>
