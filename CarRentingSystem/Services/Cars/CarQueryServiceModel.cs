@@ -1,7 +1,7 @@
-﻿namespace CarRentingSystem.Models.Api.Cars
+﻿namespace CarRentingSystem.Services.Cars
 {
     using System.Collections.Generic;
-    public class AllCarsApiResponseModel
+    public class CarQueryServiceModel
     {
         public int CurrentPage { get; init; }
 
@@ -9,6 +9,6 @@
 
         public int TotalCars { get; set; }
 
-        public IEnumerable<CarResponseModel> Cars { get; init; }
+        public IEnumerable<CarServiceModel> Cars { get; init; }
     }
 }

@@ -12,6 +12,6 @@
 
         public int CarsPerPage { get; init; } = 10;
 
-        public int TotalCars { get; init; }
+       // public int TotalCars { get; init; }
     }
 }

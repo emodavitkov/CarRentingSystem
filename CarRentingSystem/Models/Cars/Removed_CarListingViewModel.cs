@@ -1,6 +1,6 @@
 ﻿namespace CarRentingSystem.Models.Cars
 {
-    public class CarListingViewModel
+    public class Removed_CarListingViewModel
     {
         public int Id { get; init; }
         

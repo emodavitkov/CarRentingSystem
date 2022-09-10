@@ -1,11 +1,12 @@
-﻿namespace CarRentingSystem.Models.Api.Statistics
+﻿namespace CarRentingSystem.Services.Statistics
 {
-    public class StatisticsResponseModel
+    public class StatisticsServiceModel
     {
         public int TotalCars { get; init; }
 
         public int TotalUsers { get; init; }
 
         public int TotalRents { get; init; }
+
     }
 }

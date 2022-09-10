@@ -1,4 +1,6 @@
-﻿namespace CarRentingSystem.Controllers.Api
+﻿using CarRentingSystem.Services.Statistics;
+
+namespace CarRentingSystem.Controllers.Api
 {
     using CarRentingSystem.Data;
     using Microsoft.AspNetCore.Mvc;
@@ -8,16 +10,18 @@
     [Route("api/statistics")]
     public class StatisticsApiController : ControllerBase
     {
-        private readonly CarRentingDbContext data;
+        private readonly IStatisticsService statistics;
 
-        public StatisticsApiController(CarRentingDbContext data)
-            => this.data = data;
+        public StatisticsApiController(IStatisticsService statistics)
+            => this.statistics = statistics;
 
         [HttpGet]
-        public StatisticsResponseModel GetStatistics()
+        public StatisticsServiceModel GetStatistics()
         {
-            var totalCars = this.data.Cars.Count();
-            var totalUsers = this.data.Users.Count();
+            //var totalCars = this.data.Cars.Count();
+            //var totalUsers = this.data.Users.Count();
+
+            //var totalStatistics = this.statistics.Total();
 
             //var statistics = new StatisticsResponseModel
             //{
@@ -27,12 +31,14 @@
             //};
             // return statistics;
 
-            return new StatisticsResponseModel
-            {
-                TotalCars = totalCars,
-                TotalUsers = totalUsers,
-                TotalRents = 0,
-            };
+            //return new Removed_StatisticsResponseModel
+            //{
+            //    TotalCars = totalCars,
+            //    TotalUsers = totalUsers,
+            //    TotalRents = 0,
+            //};
+
+            return this.statistics.Total();
 
         }
     }

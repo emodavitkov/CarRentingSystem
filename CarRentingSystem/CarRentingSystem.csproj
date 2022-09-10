@@ -21,7 +21,6 @@
 
   <ItemGroup>
     <Folder Include="Controllers\Api\Cars\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>
