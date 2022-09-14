@@ -100,6 +100,16 @@ namespace CarRentingSystem.Controllers
             //});
         }
 
+
+        [Authorize]
+        public IActionResult Mine()
+        {
+            var myCars = this.cars.ByUser(this.User.GetId());
+
+            return View(myCars);
+        }
+
+
         [Authorize]
         public IActionResult Add()
         {
@@ -124,6 +134,7 @@ namespace CarRentingSystem.Controllers
 
         [HttpPost]
         [Authorize]
+        [AutoValidateAntiforgeryToken]
         public IActionResult Add(AddCarFormModel car)
         {
             var dealerId = this.data

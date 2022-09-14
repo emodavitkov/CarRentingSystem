@@ -1,8 +1,10 @@
 using CarRentingSystem.Data;
 using CarRentingSystem.Infrastructure;
 using CarRentingSystem.Services.Cars;
+using CarRentingSystem.Services.Dealers;
 using CarRentingSystem.Services.Statistics;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -24,10 +26,12 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 
 })
     .AddEntityFrameworkStores<CarRentingDbContext>();
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+    options.Filters.Add<AutoValidateAntiforgeryTokenAttribute>());
 
 builder.Services.AddTransient<IStatisticsService, StatisticsService>();
 builder.Services.AddTransient<ICarService, CarService>();
+builder.Services.AddTransient<IDealerService, DealerService>();
 
 var app = builder.Build();
 

@@ -1,0 +1,30 @@
+﻿@model IEnumerable<CarServiceModel>
+
+@{
+	ViewBag.Title = "My Cars";
+}
+
+@if (!Model.Any())
+{
+	<h2 class="text-center"> You do not have any cars yet!</h2>
+}
+
+<partial name="_CarsPartial" model="@Model" />
+
+@{ //Due to copy and paste moving into a partial view
+	<div class="row">
+	  @foreach (var car in Model)
+	  {
+		  <div class="col-md-4">
+			  <div class="card mb-3">
+				  <img class="card-img-top" src="@car.ImageUrl" alt="@car.Brand @car.Model - @car.Year (@car.Category)">
+				  <div class="card-body text-center">
+					  <h5 class="card-title text-center">@car.Year @car.Brand @car.Model (@car.Category)</h5>
+					  <a asp-controller="Cars" asp-action="Details" asp-route-id="@car.Id" class="btn btn-primary">View More</a>
+				  </div>
+			  </div>
+		  </div>
+	  }
+  </div>
+
+}

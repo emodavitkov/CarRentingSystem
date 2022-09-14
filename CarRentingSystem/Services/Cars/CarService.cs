@@ -2,6 +2,7 @@
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
 using System.Linq;
+using CarRentingSystem.Data.Models;
 using CarRentingSystem.Models;
 using CarRentingSystem.Models.Api.Cars;
 
@@ -49,20 +50,25 @@ namespace CarRentingSystem.Services.Cars
 
             var totalCars = carsQuery.Count();
 
-            var cars = carsQuery
-                // .OrderByDescending(c => c.Id)
+            var cars = GetCars((carsQuery
                 .Skip((currentPage - 1) * carsPerPage)
-                .Take(carsPerPage)
-                .Select(c => new CarServiceModel
-                {
-                    Id = c.Id,
-                    Brand = c.Brand,
-                    Model = c.Model,
-                    Year = c.Year,
-                    ImageUrl = c.ImageUrl,
-                    Category = c.Category.Name
-                })
-                .ToList();
+                .Take(carsPerPage)));
+                
+
+            //var cars = carsQuery
+            //    // .OrderByDescending(c => c.Id)
+            //    .Skip((currentPage - 1) * carsPerPage)
+            //    .Take(carsPerPage)
+            //    .Select(c => new CarServiceModel
+            //    {
+            //        Id = c.Id,
+            //        Brand = c.Brand,
+            //        Model = c.Model,
+            //        Year = c.Year,
+            //        ImageUrl = c.ImageUrl,
+            //        Category = c.Category.Name
+            //    })
+            //    .ToList();
 
             return new CarQueryServiceModel
             {
@@ -73,6 +79,26 @@ namespace CarRentingSystem.Services.Cars
             };
         }
 
+        public IEnumerable<CarServiceModel> ByUser(string userId)
+            => this.GetCars(this.data.Cars
+                .Where(c => c.Dealer.UserId == userId));
+        
+        //{
+            //var carsByUser = this.data
+            //    .Cars
+            //    .Where(c => c.Dealer.UserId==userId)
+            //    .Select(c => new CarServiceModel
+            //    {
+            //        Id = c.Id,
+            //        Brand = c.Brand,
+            //        Model = c.Model,
+            //        Year = c.Year,
+            //        ImageUrl = c.ImageUrl,
+            //        Category = c.Category.Name
+            //    })
+            //    .ToList();
+        //}
+
         public IEnumerable<string> AllCarBrands()
         => this.data
             .Cars
@@ -80,5 +106,20 @@ namespace CarRentingSystem.Services.Cars
             .Distinct()
             .OrderBy(br => br)
             .ToList();
-    }
+
+        
+        private IEnumerable<CarServiceModel> GetCars(IQueryable<Car> carQuery)
+           => carQuery
+            .Select(c => new CarServiceModel
+        {
+            Id = c.Id,
+            Brand = c.Brand,
+            Model = c.Model,
+            Year = c.Year,
+            ImageUrl = c.ImageUrl,
+            Category = c.Category.Name
+        })
+        .ToList();
+
+}
 }
