@@ -18,7 +18,7 @@ namespace CarRentingSystem.Services.Dealers
             .Dealers
             .Any(d => d.UserId == userId);
 
-        public int GetIdByUser(string userId)
+        public int IdByUser(string userId)
          => this.data
              .Dealers
              .Where(d => d.UserId == userId)

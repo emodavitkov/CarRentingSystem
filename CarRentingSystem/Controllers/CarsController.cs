@@ -16,15 +16,16 @@ namespace CarRentingSystem.Controllers
     {
         private readonly ICarService cars;
         private readonly IDealerService dealers;
-        private readonly CarRentingDbContext data;
+       // private readonly CarRentingDbContext data;
 
         public CarsController(
             ICarService cars,
-            IDealerService dealers,
-            CarRentingDbContext data )
+            IDealerService dealers)
+            //CarRentingDbContext data 
+        
         {
             this.cars = cars;
-            this.data = data;
+            //this.data = data;
             this.dealers = dealers;
         }
 
@@ -110,7 +111,7 @@ namespace CarRentingSystem.Controllers
         [Authorize]
         public IActionResult Mine()
         {
-            var myCars = this.cars.ByUser(this.User.GetId());
+            var myCars = this.cars.ByUser(this.User.Id());
 
             return View(myCars);
         }
@@ -131,7 +132,7 @@ namespace CarRentingSystem.Controllers
             //    return RedirectToAction(nameof(DealersController.Become), "Dealers");
             //}
 
-            if (!this.dealers.IsDealer(this.User.GetId()))
+            if (!this.dealers.IsDealer(this.User.Id()))
             {
                 return RedirectToAction(nameof(DealersController.Become), "Dealers");
             }
@@ -148,7 +149,7 @@ namespace CarRentingSystem.Controllers
         [AutoValidateAntiforgeryToken]
         public IActionResult Add(CarFormModel car)
         {
-            var dealerId = this.dealers.GetIdByUser(this.User.GetId());
+            var dealerId = this.dealers.IdByUser(this.User.Id());
 
             //var dealerId = this.data
             //    .Dealers
@@ -217,7 +218,7 @@ namespace CarRentingSystem.Controllers
         [Authorize]
         public IActionResult Edit(int id)
         {
-            var userId = this.User.GetId();
+            var userId = this.User.Id();
 
             if (!this.dealers.IsDealer(userId))
             {
@@ -248,7 +249,7 @@ namespace CarRentingSystem.Controllers
 
         public IActionResult Edit(int id, CarFormModel car)
         {
-            var dealerId = this.dealers.GetIdByUser(this.User.GetId());
+            var dealerId = this.dealers.IdByUser(this.User.Id());
 
             if (dealerId == 0)
             {
