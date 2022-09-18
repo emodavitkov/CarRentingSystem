@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-using static CarRentingSystem.WebConstants;
+using static CarRentingSystem.Areas.Admin.AdminConstants;
 
 namespace CarRentingSystem.Infrastructure
 {
