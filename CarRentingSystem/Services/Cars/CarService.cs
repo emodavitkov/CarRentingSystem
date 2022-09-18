@@ -2,19 +2,25 @@
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
 using System.Linq;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using CarRentingSystem.Data.Models;
 using CarRentingSystem.Models;
 using CarRentingSystem.Models.Api.Cars;
+using CarRentingSystem.Services.Cars.Models;
+using IConfigurationProvider = AutoMapper.IConfigurationProvider;
 
 namespace CarRentingSystem.Services.Cars
 {
     public class CarService : ICarService
     {
         private readonly CarRentingDbContext data;
+        private readonly IConfigurationProvider mapper;
 
-        public CarService(CarRentingDbContext data)
+        public CarService(CarRentingDbContext data, IMapper mapper)
         {
             this.data = data;
+            this.mapper = mapper.ConfigurationProvider;
         }
 
         public CarQueryServiceModel All(
@@ -79,24 +85,35 @@ namespace CarRentingSystem.Services.Cars
             };
         }
 
+        // with auto mapper below
         public CarDetailsServiceModel Details(int id) 
-            => this.data
-                .Cars
-                .Where(c => c.Id == id)
-                .Select(c => new CarDetailsServiceModel 
-                { 
-                    Id = c.Id,
-                    Brand = c.Brand,
-                    Model = c.Model,
-                    Description = c.Description,
-                    Year = c.Year,
-                    ImageUrl = c.ImageUrl,
-                    CategoryName = c.Category.Name,
-                    DealerId = c.DealerId,
-                    DealerName = c.Dealer.Name,
-                    UserId = c.Dealer.UserId,
-                })
-                .FirstOrDefault();
+            =>  this.data
+                 .Cars
+                 .Where(c => c.Id == id)
+                 .ProjectTo<CarDetailsServiceModel>(this.mapper)
+                 .FirstOrDefault();
+
+
+        //public CarDetailsServiceModel Details(int id)
+        //    => this.data
+        //        .Cars
+        //        .Where(c => c.Id == id)
+        //        .Select(c => new CarDetailsServiceModel
+        //        {
+        //            Id = c.Id,
+        //            Brand = c.Brand,
+        //            Model = c.Model,
+        //            Description = c.Description,
+        //            Year = c.Year,
+        //            ImageUrl = c.ImageUrl,
+        //            CategoryId = c.CategoryId,
+        //            CategoryName = c.Category.Name,
+        //            DealerId = c.DealerId,
+        //            DealerName = c.Dealer.Name,
+        //            UserId = c.Dealer.UserId,
+        //        })
+        //        .FirstOrDefault();
+
 
         public int Create(string brand, string model, string description, string imageUrl, int year, int categoryId, int dealerId)
         {

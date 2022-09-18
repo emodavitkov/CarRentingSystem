@@ -3,6 +3,7 @@ using CarRentingSystem.Services.Cars;
 
 namespace CarRentingSystem.Models.Cars
 {
+    using CarRentingSystem.Services.Cars.Models;
     using System.Collections.Generic;
 
     public class AllCarsQueryModel

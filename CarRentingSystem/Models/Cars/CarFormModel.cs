@@ -5,6 +5,7 @@ namespace CarRentingSystem.Models.Cars
     using System.Collections.Generic;
     using static Data.DataConstants.Car;
     using CarRentingSystem.Services.Cars;
+    using CarRentingSystem.Services.Cars.Models;
 
     public class CarFormModel
     {

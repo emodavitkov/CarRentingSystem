@@ -1,4 +1,5 @@
-﻿using CarRentingSystem.Models;
+﻿using AutoMapper;
+using CarRentingSystem.Models;
 using CarRentingSystem.Services.Cars;
 using CarRentingSystem.Services.Dealers;
 
@@ -16,17 +17,20 @@ namespace CarRentingSystem.Controllers
     {
         private readonly ICarService cars;
         private readonly IDealerService dealers;
+        private readonly IMapper mapper;
        // private readonly CarRentingDbContext data;
 
         public CarsController(
             ICarService cars,
-            IDealerService dealers)
+            IDealerService dealers,
+            IMapper mapper)
             //CarRentingDbContext data 
         
         {
             this.cars = cars;
             //this.data = data;
             this.dealers = dealers;
+            this.mapper = mapper;
         }
 
 
@@ -232,16 +236,24 @@ namespace CarRentingSystem.Controllers
                 return Unauthorized();
             }
 
-            return View(new CarFormModel
-            {
-                Brand = car.Brand,
-                Model = car.Model,
-                Description = car.Description,
-                ImageUrl = car.ImageUrl,
-                Year = car.Year,
-                CategoryId = car.CategoryId,
-                Categories = this.cars.AllCategories(),
-            });
+            // use auto mapper
+            var carForm = this.mapper.Map<CarFormModel>(car);
+            // auto mapper cannot map this, so we are doing it manually:
+            carForm.Categories = this.cars.AllCategories();
+
+            return View(carForm);
+
+            // auto mapper instead of this: 
+            //return View(new CarFormModel
+            //{
+            //    Brand = car.Brand,
+            //    Model = car.Model,
+            //    Description = car.Description,
+            //    ImageUrl = car.ImageUrl,
+            //    Year = car.Year,
+            //    CategoryId = car.CategoryId,
+            //    Categories = this.cars.AllCategories(),
+            //});
         }
 
         [HttpPost]
@@ -263,6 +275,7 @@ namespace CarRentingSystem.Controllers
             }
 
             ModelState.Remove("Categories");
+
             if (!ModelState.IsValid)
             {
                 car.Categories = this.cars.AllCategories();
