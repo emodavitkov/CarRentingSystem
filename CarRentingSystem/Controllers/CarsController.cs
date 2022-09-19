@@ -168,7 +168,7 @@ namespace CarRentingSystem.Controllers
             }
 
 
-            if (this.cars.CategoryExists(car.CategoryId))
+            if (!this.cars.CategoryExists(car.CategoryId))
             {
                 this.ModelState.AddModelError(nameof(car.CategoryId), "Category does not exist.");
             }
