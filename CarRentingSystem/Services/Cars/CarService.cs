@@ -87,7 +87,7 @@ namespace CarRentingSystem.Services.Cars
 
         // with auto mapper below
         public CarDetailsServiceModel Details(int id) 
-            =>  this.data
+            => this.data
                  .Cars
                  .Where(c => c.Id == id)
                  .ProjectTo<CarDetailsServiceModel>(this.mapper)
@@ -228,6 +228,14 @@ namespace CarRentingSystem.Services.Cars
                     CategoryName = c.Category.Name
                 })
                 .ToList();
+
+        public IEnumerable<LatestCarServiceModel> Latest()
+       => this.data
+           .Cars
+           .OrderByDescending(c => c.Id)
+           .ProjectTo<LatestCarServiceModel>(this.mapper)
+           .Take(3)
+           .ToList();
     }
 
 }

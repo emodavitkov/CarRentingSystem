@@ -4,25 +4,31 @@ using System.Diagnostics;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using CarRentingSystem.Data;
-using CarRentingSystem.Models.Home;
+using CarRentingSystem.Services.Cars;
 using CarRentingSystem.Services.Statistics;
+using CarRentingSystem.Models.Home;
+using System.Linq;
 
 namespace CarRentingSystem.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly CarRentingDbContext data;
-        private readonly IMapper mapper;
+       // private readonly CarRentingDbContext data;
+       private readonly ICarService cars;
+        //private readonly IMapper mapper;
         private readonly IStatisticsService statistics;
 
+        //CarRentingDbContext data,
+        // IMapper mapper,
         public HomeController(
             IStatisticsService statistics,
-            CarRentingDbContext data, 
-            IMapper mapper)
+             
+            ICarService cars)
         {
             this.statistics = statistics;
-            this.data = data;
-            this.mapper = mapper;
+            //this.data = data;
+            //this.mapper = mapper;
+            this.cars = cars;
         }
 
         public IActionResult Index()
@@ -31,12 +37,17 @@ namespace CarRentingSystem.Controllers
             //var totalUsers = this.data.Users.Count();
 
             // with auto mapper
-            var cars = this.data
-                .Cars
-                .OrderByDescending(c => c.Id)
-                .ProjectTo<CarIndexViewModel>(this.mapper.ConfigurationProvider)
-                .Take(3)
+            var latestCars = this.cars
+                .Latest()
                 .ToList();
+
+            // shape before moving to service and no auto mapper is needed we can remove it from here also
+            ////var cars = this.data
+            ////    .Cars
+            ////    .OrderByDescending(c => c.Id)
+            ////    .ProjectTo<CarIndexViewModel>(this.mapper.ConfigurationProvider)
+            ////    .Take(3)
+            ////    .ToList();
 
             // without auto mapper
 
@@ -64,7 +75,9 @@ namespace CarRentingSystem.Controllers
             {
                 TotalCars = totalStatistics.TotalCars,
                 TotalUsers = totalStatistics.TotalUsers,
-                Cars = cars,
+                //Cars = cars,
+                //Cars = latestCars.ToList()
+                Cars = latestCars
             });
         }
         
