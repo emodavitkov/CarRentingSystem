@@ -9,6 +9,8 @@ namespace CarRentingSystem.Controllers
     using CarRentingSystem.Infrastructure;
     using CarRentingSystem.Models.Dealers;
 
+    using static WebConstants;
+
     public class DealersController : Controller
     {
         private readonly CarRentingDbContext data;
@@ -48,6 +50,8 @@ namespace CarRentingSystem.Controllers
 
             this.data.Dealers.Add(dealerData);
             this.data.SaveChanges();
+
+            TempData[GlobalMessageKey] = "Thank you for becoming a dealer!";
 
             return RedirectToAction("All", "Cars");
 

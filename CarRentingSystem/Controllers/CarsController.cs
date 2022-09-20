@@ -3,6 +3,8 @@ using CarRentingSystem.Models;
 using CarRentingSystem.Services.Cars;
 using CarRentingSystem.Services.Dealers;
 
+using static CarRentingSystem.WebConstants;
+
 namespace CarRentingSystem.Controllers
 {
     using CarRentingSystem.Data;
@@ -215,6 +217,9 @@ namespace CarRentingSystem.Controllers
             car.CategoryId,
             dealerId);
 
+
+            TempData[GlobalMessageKey] = "Your car was added successfully!";
+
             return RedirectToAction(nameof(All));
             //return RedirectToAction("Index", "Home");
         }
@@ -297,7 +302,8 @@ namespace CarRentingSystem.Controllers
                 car.Year,
                 car.CategoryId);
 
-            
+            TempData[GlobalMessageKey] = "Your car was edited!";
+
             return RedirectToAction(nameof(All));
         }
 
