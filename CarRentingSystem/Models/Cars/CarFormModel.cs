@@ -7,7 +7,7 @@ namespace CarRentingSystem.Models.Cars
     using CarRentingSystem.Services.Cars;
     using CarRentingSystem.Services.Cars.Models;
 
-    public class CarFormModel
+    public class CarFormModel : ICarModel
     {
         [Required]
         [StringLength(BrandMaxLength, MinimumLength = BrandMinLength)]

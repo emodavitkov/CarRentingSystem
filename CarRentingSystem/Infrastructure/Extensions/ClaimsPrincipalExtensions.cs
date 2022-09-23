@@ -2,7 +2,7 @@
 
 using static CarRentingSystem.Areas.Admin.AdminConstants;
 
-namespace CarRentingSystem.Infrastructure
+namespace CarRentingSystem.Infrastructure.Extensions
 {
     public static class ClaimsPrincipalExtensions
     {

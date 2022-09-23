@@ -6,6 +6,9 @@
 
         public int CategoryId { get; init; }
 
+        // exists in CarServiceModel already?
+       // public string CategoryName { get; init; }
+
         public int DealerId { get; init; }
 
         public string DealerName { get; init; }

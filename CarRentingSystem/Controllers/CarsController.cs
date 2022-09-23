@@ -13,7 +13,7 @@ namespace CarRentingSystem.Controllers
     using Microsoft.AspNetCore.Mvc;
     using System.Collections.Generic;
     using Microsoft.AspNetCore.Authorization;
-    using CarRentingSystem.Infrastructure;
+    using CarRentingSystem.Infrastructure.Extensions;
 
     public class CarsController : Controller
     {
@@ -122,6 +122,17 @@ namespace CarRentingSystem.Controllers
             return View(myCars);
         }
 
+        public IActionResult Details(int id, string information)
+        {
+            var car = this.cars.Details(id);
+
+            if (information != car.GetInformation())
+            {
+                return BadRequest();
+            }
+
+            return View(car);
+        }
 
         [Authorize]
         public IActionResult Add()
@@ -208,7 +219,7 @@ namespace CarRentingSystem.Controllers
 
             //this.data.SaveChanges();
 
-            this.cars.Create(
+           var carId =  this.cars.Create(
             car.Brand,
             car.Model,
             car.Description,
@@ -218,9 +229,11 @@ namespace CarRentingSystem.Controllers
             dealerId);
 
 
-            TempData[GlobalMessageKey] = "Your car was added successfully!";
+            TempData[GlobalMessageKey] = "Your car was added successfully and it is awaiting for approval!";
 
-            return RedirectToAction(nameof(All));
+            return RedirectToAction(nameof(Details), new { id = carId, information = car.GetInformation() });
+            
+            // return RedirectToAction(nameof(All));
             //return RedirectToAction("Index", "Home");
         }
 
@@ -300,11 +313,14 @@ namespace CarRentingSystem.Controllers
                 car.Description,
                 car.ImageUrl,
                 car.Year,
-                car.CategoryId);
+                car.CategoryId,
+                this.User.IsAdmin());
 
-            TempData[GlobalMessageKey] = "Your car was edited!";
+            TempData[GlobalMessageKey] = $"Your car was edited{(this.User.IsAdmin() ? string.Empty : " and is awaiting for approval!")}!";
 
-            return RedirectToAction(nameof(All));
+            return RedirectToAction(nameof(Details), new { id, information = car.GetInformation() });
+
+            // return RedirectToAction(nameof(All));
         }
 
         //private bool UserIdDealer()

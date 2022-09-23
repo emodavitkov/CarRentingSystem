@@ -24,14 +24,18 @@ namespace CarRentingSystem.Services.Cars
         }
 
         public CarQueryServiceModel All(
-            string brand,
-            string searchTerm,
-            CarSorting sorting,
-            int currentPage,
-            int carsPerPage)
+            string brand = null,
+            string searchTerm = null,
+            CarSorting sorting = CarSorting.DateCreated,
+            int currentPage = 1,
+            int carsPerPage = int.MaxValue,
+            bool publicOnly = true)
         {
 
-            var carsQuery = this.data.Cars.AsQueryable();
+            // var carsQuery = this.data.Cars.AsQueryable();
+
+            var carsQuery = this.data.Cars
+                .Where(c => !publicOnly || c.IsPublic);
 
             if (!string.IsNullOrWhiteSpace(brand))
             {
@@ -115,7 +119,13 @@ namespace CarRentingSystem.Services.Cars
         //        .FirstOrDefault();
 
 
-        public int Create(string brand, string model, string description, string imageUrl, int year, int categoryId, int dealerId)
+        public int Create(string brand, 
+            string model,
+            string description,
+            string imageUrl,
+            int year,
+            int categoryId,
+            int dealerId)
         {
             var carData = new Car
             {
@@ -126,6 +136,7 @@ namespace CarRentingSystem.Services.Cars
                 Year = year,
                 CategoryId = categoryId,
                 DealerId = dealerId,
+                IsPublic = false
             };
 
             this.data.Cars.Add(carData);
@@ -140,7 +151,8 @@ namespace CarRentingSystem.Services.Cars
             string description, 
             string imageUrl, 
             int year, 
-            int categoryId)
+            int categoryId,
+            bool isPublic)
         {
             var carData = this.data.Cars.Find(id);
 
@@ -161,6 +173,7 @@ namespace CarRentingSystem.Services.Cars
             carData.ImageUrl = imageUrl;
             carData.Year = year;
             carData.CategoryId = categoryId;
+            carData.IsPublic = isPublic;
 
 
             this.data.SaveChanges();
@@ -193,6 +206,16 @@ namespace CarRentingSystem.Services.Cars
         //    .ToList();
         //}
 
+
+        public void ChangeVisibility(int carId)
+        {
+            var car = this.data.Cars.Find(carId);
+
+            car.IsPublic = !car.IsPublic;
+
+            this.data.SaveChanges();
+        }
+
         public IEnumerable<string> AllBrands()
             => this.data
                 .Cars
@@ -204,12 +227,18 @@ namespace CarRentingSystem.Services.Cars
         public IEnumerable<CarCategoryServiceModel> AllCategories()
             => this.data
                 .Categories
-                .Select(c => new CarCategoryServiceModel
-                {
-                    Id = c.Id,
-                    Name = c.Name
-                })
+                .ProjectTo<CarCategoryServiceModel>(this.mapper)
                 .ToList();
+
+        //public IEnumerable<CarCategoryServiceModel> AllCategories()
+        //    => this.data
+        //        .Categories
+        //        .Select(c => new CarCategoryServiceModel
+        //        {
+        //            Id = c.Id,
+        //            Name = c.Name
+        //        })
+        //        .ToList();
 
         public bool CategoryExists(int categoryId)
             => this.data
@@ -218,24 +247,32 @@ namespace CarRentingSystem.Services.Cars
 
         private IEnumerable<CarServiceModel> GetCars(IQueryable<Car> carQuery)
             => carQuery
-                .Select(c => new CarServiceModel
-                {
-                    Id = c.Id,
-                    Brand = c.Brand,
-                    Model = c.Model,
-                    Year = c.Year,
-                    ImageUrl = c.ImageUrl,
-                    CategoryName = c.Category.Name
-                })
+                .ProjectTo<CarServiceModel>(this.mapper)
                 .ToList();
+
+        //private IEnumerable<CarServiceModel> GetCars(IQueryable<Car> carQuery)
+        //    => carQuery
+        //        .Select(c => new CarServiceModel
+        //        {
+        //            Id = c.Id,
+        //            Brand = c.Brand,
+        //            Model = c.Model,
+        //            Year = c.Year,
+        //            ImageUrl = c.ImageUrl,
+        //            CategoryName = c.Category.Name,
+        //            IsPublic = c.IsPublic
+        //        })
+        //        .ToList();
 
         public IEnumerable<LatestCarServiceModel> Latest()
        => this.data
            .Cars
+           .Where(c => c.IsPublic)
            .OrderByDescending(c => c.Id)
            .ProjectTo<LatestCarServiceModel>(this.mapper)
            .Take(3)
            .ToList();
+
     }
 
 }

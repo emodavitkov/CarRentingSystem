@@ -1,6 +1,6 @@
 using CarRentingSystem.Data;
 using CarRentingSystem.Data.Models;
-using CarRentingSystem.Infrastructure;
+using CarRentingSystem.Infrastructure.Extensions;
 using CarRentingSystem.Services.Cars;
 using CarRentingSystem.Services.Dealers;
 using CarRentingSystem.Services.Statistics;
@@ -67,12 +67,22 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
+    name: "Areas",
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
+app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
-    name: "Areas",
-    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+    name: "Car Details",
+    pattern: "/Cars/Details/{id}/{information}",
+    defaults: new { controller = "Cars", action = "Details" });
+
+
+
+
+
 
 app.MapRazorPages();
 
